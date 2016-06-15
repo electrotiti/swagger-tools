@@ -1,0 +1,24 @@
+{
+  "name": "electrotiti/openapi",
+  "type": "library",
+  "description": "Tools to parse and validate OpenAPI definition file",
+  "keywords": ["OpenAPI", "swagger", "api", "rest"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thierry LESZKOWICZ",
+      "email": "electrotiti@gmail.com",
+      "homepage": "http://github.com/electrotiti/openapi"
+    }
+  ],
+  "autoload": {
+    "psr-4": { "Electrotiti\\OpenApi\\": "src/OpenApi/" }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "5.4.*"
+  },
+  "require": {
+    "php": ">=5.3.3",
+    "symfony/yaml": "3.1.*"
+  }
+}
