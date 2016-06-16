@@ -11,14 +11,11 @@ class OpenApiParserTest extends \PHPUnit_Framework_TestCase
 swagger: '2.0'
 info:
   version: "0.0.0"
-  title: <enter your title>
+  title: "Test of definition"
 paths:
-  /persons:
+  /users:
     get:
-      description: |
-        Gets `Person` objects.
-        Optional query param of **size** determines
-        size of returned array
+      description: "Get the list of users"
       parameters:
         -
           name: size
@@ -31,10 +28,10 @@ paths:
         200:
           description: Successful response
           schema:
-            title: ArrayOfPersons
+            title: ArrayOfUsers
             type: array
             items:
-              title: Person
+              title: User
               type: object
               properties:
                 name:
@@ -44,11 +41,64 @@ paths:
 
 EOF;
 
+        $expected = [
+            'swagger' => '2.0',
+            'info' =>
+                [
+                    'version' => '0.0.0',
+                    'title' => 'Test of definition'
+                ],
+            'paths' =>
+                [
+                    '/users' =>
+                        [
+                            'get' =>
+                                [
+                                    'description' => "Get the list of users",
+                                    'parameters' =>
+                                        [
+                                            [
+                                                'name' => 'size',
+                                                'in' => 'query',
+                                                'description' => 'Size of array',
+                                                'required' => true,
+                                                'type' => 'number',
+                                                'format' => 'double'
+                                            ]
+                                        ],
+                                    'responses' =>
+                                        [
+                                            '200' =>
+                                                [
+                                                    'description' => 'Successful response',
+                                                    'schema' =>
+                                                        [
+                                                            'title' => 'ArrayOfUsers',
+                                                            'type' => 'array',
+                                                            'items' =>
+                                                                [
+                                                                    'title' => 'User',
+                                                                    'type' => 'object',
+                                                                    'properties' =>
+                                                                        [
+                                                                            'name' =>
+                                                                                ['type' => 'string'],
+                                                                            'single' =>
+                                                                                ['type' => 'boolean']
+
+                                                                        ]
+                                                                ]
+                                                        ]
+                                                ]
+                                        ]
+                                ]
+                        ]
+                ]
+        ];
 
         $parser = new \Electrotiti\OpenApi\OpenApiParser();
-        $expected = $parser->parse($rawYaml);
-
-        var_dump($expected);
+        $actual = $parser->parse($rawYaml);        
+        $this->assertEquals($expected, $actual);
     }
 
 }
