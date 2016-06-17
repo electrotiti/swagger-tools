@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Electrotiti\SwaggerTools\SwaggerParser;
+use Symfony\Component\Yaml\Yaml;
 
 class SwaggerParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -101,6 +102,16 @@ EOF;
         $parser = new SwaggerParser();
         $actual = $parser->parse($rawYaml);        
         $this->assertEquals($expected, $actual);
+    }
+    
+    public function testParseFromFile()
+    {
+        $fileName = __DIR__.'/../Sample/api.yml';
+        $parser = new SwaggerParser();
+        $parser->setResolveLocalReference(false);
+        $actual = $parser->parseFromFile($fileName);
+        $rawData = Yaml::dump($actual, 10);
+        file_put_contents(__DIR__.'/../dump.yml', $rawData);
     }
 
 }

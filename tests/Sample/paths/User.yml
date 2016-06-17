@@ -1,0 +1,24 @@
+/user:
+    get:
+        summary: Get list of user
+        description: Get the full list of user
+        operationId: getListOfUser
+        tags: [ User ]
+        security:
+          - token: [user]
+        parameters:
+          - name: type
+            in: query
+            type: string
+            description: 'Type of user'
+            enum:
+              - admin
+              - member
+            required: false
+        responses:
+            200:
+                description: Returns list of user
+                schema: { type: array, items: { $ref: "#/definitions/User" } }
+            default:
+                description: 'Unexpected error'
+                schema: { $ref: '#/definitions/Error' }

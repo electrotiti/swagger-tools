@@ -1,0 +1,6 @@
+version: 1.0.0
+title: 'Api test file'
+description: 'This is the description of test file'
+contact:
+  name: 'Thierry Leszkowicz'
+  email: electrotiti@gmail.com

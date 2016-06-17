@@ -2,7 +2,7 @@
 
 namespace Electrotiti\SwaggerTools;
 
-use Electrotiti\OpenApi\Exceptions\ParsingException;
+use Electrotiti\SwaggerTools\Exceptions\ParsingException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -26,6 +26,12 @@ class SwaggerParser
      * @var bool
      */
     private $resolveLocalReference = false;
+
+    /**
+     * @var array
+     */
+    private $localDefinitions = [];
+
 
     /**
      * OpenApiParser constructor.
@@ -67,29 +73,6 @@ class SwaggerParser
     }
 
     /**
-     * Parses OpenApi YAML into a PHP array and resolve children references
-     *
-     * @param string $input Yaml plain text
-     * @param string $basePath BasePath to resolve children references
-     * @return array
-     */
-    public function parse($input, $basePath = null)
-    {
-        $this->setBasePath($basePath);
-        $output = Yaml::parse($input, true);
-
-        foreach ($output as $key => $sub) {
-            if (is_array($sub)) {
-                $output[$key] = $this->subParse($sub);
-            } else {
-                $output[$key] = $sub;
-            }
-        }
-
-        return $output;
-    }
-
-    /**
      * Parses OpenApi YAML using a file
      * @param string $filePath
      * @return array
@@ -104,24 +87,72 @@ class SwaggerParser
     }
 
     /**
-     * @param $subPart
+     * Parses OpenApi YAML into a PHP array and resolve children references
+     *
+     * @param string $input Yaml plain text
+     * @param string $basePath BasePath to resolve children references
+     * @return array
      */
-    public function subParse($subPart)
+    public function parse($input, $basePath = null)
     {
-        foreach ($subPart as $key => $sub) {
-            if ('$ref' === $key) {
-                $subSubPart = $this->resolvePath($sub);
-                if (is_array($subSubPart)) {
-                    $output[$key] = array_merge($sub, $subSubPart);
-                }
-            } elseif (is_array($sub)) {
-                $subSubPart = $this->subParse($sub);
-                $output[$key] = $subSubPart;
+        $this->setBasePath($basePath);
+
+        $output = [];
+        $data = Yaml::parse($input, true);
+
+        $localDefAlreadyResolve = false;
+        if ($this->resolveLocalReference && isset($data['definitions'])) {
+            $data['definitions'] = $this->subParse($data['definitions']);
+            $this->localDefinitions = $data['definitions'];
+            $localDefAlreadyResolve = true;
+            unset($data['definitions']);
+        }
+
+        foreach ($data as $key => $sub) {
+            if (is_array($sub)) {
+                $output[$key] = $this->subParse($sub);
             } else {
                 $output[$key] = $sub;
             }
         }
-        
+
+        if ($localDefAlreadyResolve) {
+            $data['definitions'] = $this->localDefinitions;
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param $subPart
+     * @return array
+     */
+    public function subParse($subPart)
+    {
+        $output = [];
+        foreach ($subPart as $key => $sub) {
+            if ('$ref' === $key) {
+                $subSubPart = $this->resolveExternalReference($sub);
+                if (is_array($subSubPart)) {
+                    $newSubSubPart = $this->subParse($subSubPart);
+                }
+                if (is_array($newSubSubPart)) {
+                    $output = array_merge($output, $subSubPart);
+                }
+            } elseif (is_array($sub)) {
+                $subSubPart = $this->subParse($sub);
+                if (isset($sub['$ref'])) {
+                    foreach ($subSubPart as $k => $v) {
+                        $output[$k] = $v;
+                    }
+                } else {
+                    $output[$key] = $subSubPart;
+                }
+            } else {
+                $output[$key] = $sub;
+            }
+        }
+
         return $output;
     }
 
@@ -138,7 +169,11 @@ class SwaggerParser
             $filePath = $this->basePath . $reference;
         } elseif ('#' === substr($reference, 0, 1)) {
             if ($this->resolveLocalReference){
-                // TODO Parse local ref definitions before other parts...
+                $localDefName = str_replace('#/definitions/','', $reference);
+                if (false === isset($this->localDefinitions[$localDefName])) {
+                    throw new ParsingException('Local definitions ' . $localDefName . ' does not exist');
+                }
+                return $this->localDefinitions[$localDefName];
             } else {
                 return $reference;
             }

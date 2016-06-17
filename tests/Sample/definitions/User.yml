@@ -1,0 +1,8 @@
+User:
+  properties:
+    id:
+      type: integer
+      description: 'ID of the user'
+    firstname:
+      type: string
+      description: 'Firstname of user'

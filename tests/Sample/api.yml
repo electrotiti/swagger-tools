@@ -1,0 +1,16 @@
+swagger: '2.0'
+info: { $ref: './info.yml' }
+host: test.com
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+  - application/x-www-form-urlencoded
+produces:
+  - application/json
+paths:
+  - $ref: ./paths/User.yml
+definitions:
+  - $ref: ./definitions/User.yml
+  - $ref: ./definitions/Error.yml
