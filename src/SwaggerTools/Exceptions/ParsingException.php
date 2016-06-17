@@ -1,6 +1,6 @@
 <?php
 
-namespace Electrotiti\OpenApi\Exceptions;
+namespace Electrotiti\SwaggerTools\Exceptions;
 
 class ParsingException extends \Exception
 {

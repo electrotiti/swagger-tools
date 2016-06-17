@@ -1,7 +1,7 @@
 {
-  "name": "electrotiti/openapi",
+  "name": "electrotiti/swagger-tools",
   "type": "library",
-  "description": "Tools to parse and validate OpenAPI definition file",
+  "description": "Tools to parse and validate Swagger 2 or OpenApi 3 definition file",
   "keywords": ["OpenAPI", "swagger", "api", "rest"],
   "license": "MIT",
   "authors": [
@@ -12,7 +12,7 @@
     }
   ],
   "autoload": {
-    "psr-4": { "Electrotiti\\OpenApi\\": "src/OpenApi/" }
+    "psr-4": { "Electrotiti\\SwaggerTools\\": "src/SwaggerTools/" }
   },
   "require-dev": {
     "phpunit/phpunit": "5.4.*"

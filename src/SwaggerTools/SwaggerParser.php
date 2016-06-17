@@ -1,6 +1,6 @@
 <?php
 
-namespace Electrotiti\OpenApi;
+namespace Electrotiti\SwaggerTools;
 
 use Electrotiti\OpenApi\Exceptions\ParsingException;
 use Symfony\Component\Yaml\Yaml;
@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
  * This class extract a full API definition from a Yaml file and his children and does the reverse
  * @package Electrotiti\OpenApi
  */
-class OpenApiParser
+class SwaggerParser
 {
     /**
      * @var string

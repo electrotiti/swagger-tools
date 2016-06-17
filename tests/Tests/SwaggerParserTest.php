@@ -2,7 +2,9 @@
 
 namespace Tests;
 
-class OpenApiParserTest extends \PHPUnit_Framework_TestCase
+use Electrotiti\SwaggerTools\SwaggerParser;
+
+class SwaggerParserTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testParse()
@@ -96,7 +98,7 @@ EOF;
                 ]
         ];
 
-        $parser = new \Electrotiti\OpenApi\OpenApiParser();
+        $parser = new SwaggerParser();
         $actual = $parser->parse($rawYaml);        
         $this->assertEquals($expected, $actual);
     }
