@@ -30,7 +30,7 @@ class SwaggerParser
     /**
      * @var array
      */
-    private $localDefinitions = [];
+    private $definitions = [];
 
 
     /**
@@ -103,7 +103,7 @@ class SwaggerParser
         $localDefAlreadyResolve = false;
         if ($this->resolveLocalReference && isset($data['definitions'])) {
             $data['definitions'] = $this->subParse($data['definitions']);
-            $this->localDefinitions = $data['definitions'];
+            $this->definitions = $data['definitions'];
             $localDefAlreadyResolve = true;
             unset($data['definitions']);
         }
@@ -117,7 +117,7 @@ class SwaggerParser
         }
 
         if ($localDefAlreadyResolve) {
-            $data['definitions'] = $this->localDefinitions;
+            $data['definitions'] = $this->definitions;
         }
 
         return $output;
@@ -133,18 +133,11 @@ class SwaggerParser
         foreach ($subPart as $key => $sub) {
             if ('$ref' === $key) {
                 $subSubPart = $this->resolveExternalReference($sub);
-                if (is_array($subSubPart)) {
-                    $newSubSubPart = $this->subParse($subSubPart);
-                }
-                if (is_array($newSubSubPart)) {
                     $output = array_merge($output, $subSubPart);
-                }
             } elseif (is_array($sub)) {
                 $subSubPart = $this->subParse($sub);
                 if (isset($sub['$ref'])) {
-                    foreach ($subSubPart as $k => $v) {
-                        $output[$k] = $v;
-                    }
+                    $output = array_merge($output, $subSubPart);
                 } else {
                     $output[$key] = $subSubPart;
                 }
@@ -170,10 +163,10 @@ class SwaggerParser
         } elseif ('#' === substr($reference, 0, 1)) {
             if ($this->resolveLocalReference){
                 $localDefName = str_replace('#/definitions/','', $reference);
-                if (false === isset($this->localDefinitions[$localDefName])) {
+                if (false === isset($this->definitions[$localDefName])) {
                     throw new ParsingException('Local definitions ' . $localDefName . ' does not exist');
                 }
-                return $this->localDefinitions[$localDefName];
+                return $this->definitions[$localDefName];
             } else {
                 return $reference;
             }
