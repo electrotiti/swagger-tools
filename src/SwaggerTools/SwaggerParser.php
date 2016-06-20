@@ -133,7 +133,7 @@ class SwaggerParser
         foreach ($subPart as $key => $sub) {
             if ('$ref' === $key) {
                 $subSubPart = $this->resolveExternalReference($sub);
-                    $output = array_merge($output, $subSubPart);
+                $output = array_merge($output, $subSubPart);
             } elseif (is_array($sub)) {
                 $subSubPart = $this->subParse($sub);
                 if (isset($sub['$ref'])) {
